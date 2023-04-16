@@ -122,7 +122,10 @@ async def predict(request: Request):
 
 # --------------------------------------------------------------------------------> Using the detector
 @app.post("/predict-video")
-async def predict_video(frame: bytes):
+async def predict_video(request:Request):
+    if request:
+        params = await request.json()
+        frame=params["frame"]
     detector = app.state.detector
     # Convert bytes to numpy array
     np_frame = np.frombuffer(frame, np.uint8)
