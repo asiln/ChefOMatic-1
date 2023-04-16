@@ -29,10 +29,10 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Load models
+# Load models and data
 detector = CompleteRecognition(0.68)
 recipeModel = pickle.load(open("NearestNeighborModel.pkl", 'rb'))
-
+data = pd.read_csv('Cleaned_Data.csv')
 
 # Startup Event
 @app.on_event("startup")
@@ -40,12 +40,12 @@ async def startup_event():
     # Store models in the application's state
     app.state.detector = detector
     app.state.recipeModel = recipeModel
-
+    app.state.data = data
 
 # -----------------------------------------------------------------------------------------> Using Lazeez
 @app.get('/api')
 async def openingPage():
-    data = pd.read_csv('Cleaned_Data.csv')
+    data = app.state.data
     allIngredients = data.columns.tolist()
     allIngredients.pop(0)
     allIngredients.pop(0)
@@ -61,7 +61,7 @@ async def openingPage():
 
 @app.get("/api/required-ingredients")
 async def requiredIngredients():
-    data = pd.read_csv('Cleaned_Data.csv')
+    data = app.state.data
     # data.drop_duplicates()
     ner = np.array(data["NER"]).tolist()
     x = np.array(data["title"]).tolist()
@@ -76,7 +76,7 @@ async def requiredIngredients():
 
 @app.post("/api/specific-recipes")
 async def recipes(request: Request):
-    data = pd.read_csv('Cleaned_Data.csv')
+    data = app.state.data
     if request:
         params = await request.json()
         dish = params["dish"]
@@ -92,9 +92,8 @@ async def recipes(request: Request):
 @app.post("/api/predict")
 async def predict(request: Request):
 
-    data = pd.read_csv('Cleaned_Data.csv')
-    pickle_in = open("NearestNeighborModel.pkl", 'rb')
-    model = pickle.load(pickle_in)
+    data = app.state.data
+    model = app.state.recipeModel
 
     allIngredients = data.columns.tolist()
     allIngredients.pop(0)
@@ -124,11 +123,11 @@ async def predict(request: Request):
 # --------------------------------------------------------------------------------> Using the detector
 @app.post("/predict-video")
 async def predict_video(frame: bytes):
+    detector = app.state.detector
     # Convert bytes to numpy array
     np_frame = np.frombuffer(frame, np.uint8)
     # Decode the image
     image = cv2.imdecode(np_frame, cv2.IMREAD_COLOR)
-    detector = app.state.detector
     results = detector(image)
     return results
 
