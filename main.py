@@ -12,6 +12,7 @@ from complete_recognition import CompleteRecognition
 import cv2
 import numpy as np
 import io
+import base64
 
 
 # DATA HANDLING
@@ -126,6 +127,7 @@ async def predict_video(request:Request):
     if request:
         params = await request.json()
         frame=params["frame"]
+        frame=base64.b64decode(frame)
     detector = app.state.detector
     # Convert bytes to numpy array
     np_frame = np.frombuffer(frame, np.uint8)
