@@ -1,14 +1,20 @@
 # BACKEND IMPORTS
+import pickle
+import ast
+import numpy as np
+import pandas as pd
 from condition import *
-from fastapi import FastAPI, Path, HTTPException, Request
+from fastapi import FastAPI, Path, HTTPException, Request, File, UploadFile
+from starlette.responses import StreamingResponse
+from PIL import Image
 from fastapi.middleware.cors import CORSMiddleware
 from complete_recognition import CompleteRecognition
+import cv2
+import numpy as np
+import io
+
 
 # DATA HANDLING
-import pandas as pd
-import numpy as np
-import ast
-import pickle
 
 app = FastAPI()
 
@@ -24,10 +30,11 @@ app.add_middleware(
 )
 
 # Load models
-detector = CompleteRecognition()
+detector = CompleteRecognition(0.68)
 recipeModel = pickle.load(open("NearestNeighborModel.pkl", 'rb'))
 
 
+# Startup Event
 @app.on_event("startup")
 async def startup_event():
     # Store models in the application's state
@@ -35,6 +42,7 @@ async def startup_event():
     app.state.recipeModel = recipeModel
 
 
+# -----------------------------------------------------------------------------------------> Using Lazeez
 @app.get('/api')
 async def openingPage():
     data = pd.read_csv('Cleaned_Data.csv')
@@ -110,3 +118,16 @@ async def predict(request: Request):
             raise HTTPException(400, "Error")
 
     raise HTTPException(400, "Error")
+# -------------------------------------------------------------------------------> Using Lazeez
+
+
+# --------------------------------------------------------------------------------> Using the detector
+@app.post("/predict-video")
+async def predict_video(frame: bytes):
+    # Convert bytes to numpy array
+    np_frame = np.frombuffer(frame, np.uint8)
+    # Decode the image
+    image = cv2.imdecode(np_frame, cv2.IMREAD_COLOR)
+    detector = app.state.detector
+    results = detector(image)
+    return results
