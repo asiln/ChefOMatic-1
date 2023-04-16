@@ -131,3 +131,6 @@ async def predict_video(frame: bytes):
     detector = app.state.detector
     results = detector(image)
     return results
+
+
+# --------------------------------------------------------------------------------> Using the detector
