@@ -106,6 +106,7 @@ import { Camera } from 'expo-camera';
 import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
 import * as tf from '@tensorflow/tfjs'
 import Canvas from 'react-native-canvas' 
+import * as base64 from 'base-64'
 
 
 const TensorCamera= cameraWithTensors(Camera)
@@ -162,8 +163,9 @@ export default function RobotVision(props) {
 
       const nextImageTensor = images.next().value
       var img = tf.browser.toPixels(nextImageTensor)
+      var base64ImageData = base64.default.encode(String.fromCharCode(...new Uint8Array(imageData)))
 
-      // var response = await sendFrameToBackend(img)
+      // var response = await sendFrameToBackend(base64ImageData)
       // plotBoxes(response)
       
       setAnimationFrameId(requestAnimationFrame(loop))
