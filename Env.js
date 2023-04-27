@@ -6,7 +6,7 @@ class Env{
 }
 
 const env = new Env(
-    url="geuhkbkdk",
+    url="https://9deb-2-51-66-185.ngrok-free.app",
     dishesPerPage=200
     )
 
