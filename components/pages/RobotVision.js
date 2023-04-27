@@ -157,14 +157,13 @@ export default function RobotVision(props) {
 
 
   const handleCameraStream = (images)=>{
-    let animationFrameId = null;
     const loop= async()=>{
       
 
       const nextImageTensor = images.next().value
-      var img = tf.browser.toPixels(nextImageTensor)
-      var base64ImageData = base64.default.encode(String.fromCharCode(...new Uint8Array(imageData)))
-
+      // var img = tf.browser.toPixels(nextImageTensor)
+      // var base64ImageData = base64.default.encode(String.fromCharCode(...new Uint8Array(imageData)))
+      console.log(nextImageTensor)
       // var response = await sendFrameToBackend(base64ImageData)
       // plotBoxes(response)
       
@@ -217,14 +216,14 @@ const handleCanvas = async (can)=>{
         style={styles.camera}
         type={Camera.Constants.Type.back}
         onReady={handleCameraStream}
-        cameraTextureHeight={textureDims.height}
-        cameraTextureWidth={textureDims.width}
+        // cameraTextureHeight={textureDims.height}
+        // cameraTextureWidth={textureDims.width}
         resizeHeight={200}
         resizeWidth={152}
         resizeDepth={3}
         autorender={true}
         playSoundOnCapture={false}
-        useCustomShadersToResize={false}
+        // useCustomShadersToResize={false}
         // ref={(ref) => setCamera(ref)}
       />
     </View>
