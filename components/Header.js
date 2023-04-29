@@ -9,7 +9,7 @@ export default function Header(props) {
       
       <View>
         <Text style={styles.headerText}>{props.title}</Text>
-        <TouchableOpacity style={styles.headerRightBtn}>
+        <TouchableOpacity style={styles.headerRightBtn }>
         <Image source={icons.setting} style={styles.headerRightBtnIcon} />
       </TouchableOpacity>
       </View>
